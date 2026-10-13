@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zero-Trust Access Control | Continuous Risk Assessment & Biometric Face Verification</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="top-nav">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#090d16" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-title">ZERO-TRUST CRA ARCHITECTURE</div>
+        <div class="brand-subtitle">Continuous Risk Assessment & Face Biometrics</div>
+      </div>
+    </div>
+
+    <div class="nav-metrics">
+      <div class="metric-pill">
+        <span class="status-dot"></span>
+        <span>PEP / PDP: <strong style="color: var(--accent-emerald);">ENFORCING</strong></span>
+      </div>
+      <div class="metric-pill">
+        <span>&mu;<sub>tt</sub>: <strong id="top-mutt" style="color: var(--accent-cyan);">80.0</strong></span>
+        <span style="color: var(--text-dim);">|</span>
+        <span>&mu;<sub>mfa</sub>: <strong id="top-mumfa" style="color: var(--accent-amber);">65.0</strong></span>
+      </div>
+      <div id="user-nav-badge" class="metric-pill" style="display: none; align-items: center; gap: 0.5rem;">
+        <img id="nav-user-avatar" src="" alt="Verified Face" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; display: none; border: 1.5px solid var(--accent-cyan);">
+        <span id="nav-user-role-badge" class="badge-role-user">USER</span>
+        <span id="nav-user-name" style="color: var(--accent-cyan); font-weight: 600;">Prince</span>
+        <button id="btn-logout-nav" class="btn btn-secondary" style="padding: 0.2rem 0.6rem; font-size: 0.72rem; margin-left: 0.4rem;">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+    
+    <!-- Top-level Navigation Tabs (Only visible when Admin or viewing general tabs) -->
+    <nav class="tabs-bar" id="main-nav-tabs">
+      <button class="tab-btn active" data-tab="tab-auth">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <span id="tab-auth-label">Access & Biometric Portal</span>
+      </button>
+      <button class="tab-btn admin-only-tab" data-tab="tab-future" style="display: none;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+        Future Work Research Lab (8 Requirements)
+      </button>
+      <button class="tab-btn admin-only-tab" data-tab="tab-users" style="display: none;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        Users & Face Profiles
+      </button>
+      <button class="tab-btn admin-only-tab" data-tab="tab-audit" style="display: none;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+        Security Audit Trail
+      </button>
+    </nav>
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: ACCESS & BIOMETRIC PORTAL                         -->
+    <!-- ======================================================== -->
+    <section id="tab-auth" class="tab-content active">
+      
+      <!-- Unauthenticated View with Dual Portal Switcher -->
+      <div id="unauth-view">
+        
+        <!-- Portal Selector Switcher (User vs Admin) -->
+        <div class="portal-selector-bar">
+          <button class="portal-switch-btn active" id="btn-select-user-portal">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            Employee / User Portal
+          </button>
+          <button class="portal-switch-btn" id="btn-select-admin-portal">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Security Admin (SOC) Portal
+          </button>
+        </div>
+
+        <div class="grid-2">
+          
+          <!-- Military-Grade Biometric Face Scanner -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                Mandatory Biometric Face Scanner
+              </div>
+              <span id="camera-status-tag" class="metric-pill" style="font-size: 0.72rem; color: var(--accent-amber);">Optical Sensor Idle</span>
+            </div>
+
+            <div class="scanner-viewport">
+              <video id="webcam-video" autoplay playsinline muted></video>
+              <canvas id="scanner-canvas"></canvas>
+              <div id="camera-placeholder" class="camera-placeholder">
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+                <p style="font-size: 0.9rem; line-height: 1.5;">
+                  <strong>Live Optical Face Scanning Mandatory</strong><br>
+                  Every authentication requires real-time 128-D facial vector matching against your enrolled profile.
+                </p>
+                <button id="btn-start-camera" class="btn btn-primary">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                  Activate Camera Scanner
+                </button>
+              </div>
+            </div>
+
+            <div class="scanner-controls">
+              <div class="meter-wrapper">
+                <div class="meter-header">
+                  <span>Facial Match Confidence</span>
+                  <span id="confidence-readout" style="color: var(--accent-cyan); font-weight: bold;">0%</span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div id="confidence-bar" class="progress-bar-fill" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 0.5rem;">
+                <button id="btn-toggle-camera" class="btn btn-secondary" style="flex: 1;" disabled>Stop Camera</button>
+                <button id="btn-simulate-face" class="btn btn-secondary" style="flex: 1;" title="Simulates camera capture with verified facial template">
+                  ⚡ Match Face
+                </button>
+              </div>
+
+              <!-- Multi-Modal Voice Biometric Sensor HUD -->
+              <div style="margin-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 0.85rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                  <div style="font-size: 0.88rem; font-weight: 600; display: flex; align-items: center; gap: 0.4rem; color: var(--accent-purple);">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                    Acoustic Voiceprint Scanner
+                  </div>
+                  <span id="voice-status-tag" class="metric-pill" style="color: var(--accent-amber); font-size: 0.72rem;">Mic Sensor Idle</span>
+                </div>
+
+                <!-- Real-time Oscilloscope Waveform Canvas -->
+                <div style="height: 60px; background: rgba(10, 15, 29, 0.85); border: 1px solid rgba(139, 92, 246, 0.35); border-radius: 6px; overflow: hidden; margin-bottom: 0.5rem; position: relative;">
+                  <canvas id="voice-waveform-canvas" width="400" height="60" style="width: 100%; height: 100%; display: block;"></canvas>
+                </div>
+
+                <!-- Passphrase Prompt Banner -->
+                <div style="background: rgba(139, 92, 246, 0.08); border: 1px dashed rgba(139, 92, 246, 0.35); border-radius: 6px; padding: 0.4rem 0.65rem; font-size: 0.76rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                  <span>Speak: <strong style="color: var(--accent-cyan);">"Zero-Trust Secure Access 2026"</strong></span>
+                  <span id="voice-confidence-readout" style="color: var(--accent-purple); font-weight: bold; font-family: var(--font-mono);">0%</span>
+                </div>
+
+                <div class="meter-wrapper" style="margin-bottom: 0.6rem;">
+                  <div class="progress-bar-bg" style="height: 5px;">
+                    <div id="voice-progress-bar" class="progress-bar-fill" style="width: 0%; background: linear-gradient(90deg, #8b5cf6, #ec4899);"></div>
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 0.5rem;">
+                  <button type="button" id="btn-record-voice" class="btn btn-secondary" style="flex: 1; font-size: 0.8rem; border-color: rgba(139, 92, 246, 0.4);">
+                    🎙️ Record Voice
+                  </button>
+                  <button type="button" id="btn-sim-voice" class="btn btn-secondary" style="flex: 1; font-size: 0.8rem; border-color: rgba(139, 92, 246, 0.4);" title="Matches registered acoustic voiceprint">
+                    ⚡ Match Voice
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Dual Authentication Form (User vs Admin vs Register) -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title" id="auth-form-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                Employee Portal Sign In
+              </div>
+              <button id="btn-toggle-register" class="btn btn-secondary" style="padding: 0.3rem 0.75rem; font-size: 0.78rem;">
+                Register New User
+              </button>
+            </div>
+
+            <!-- Sign In Form -->
+            <form id="form-login">
+              <div class="form-group">
+                <label class="form-label" for="login-username" id="label-login-username">Employee Username</label>
+                <input type="text" id="login-username" class="form-input" placeholder="e.g. user or prince" value="user" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="login-password">Access Password</label>
+                <input type="password" id="login-password" class="form-input" placeholder="Enter password" value="UserPass123!" required>
+              </div>
+
+              <div id="login-portal-badge" style="background: rgba(0, 242, 254, 0.08); border: 1px solid rgba(0, 242, 254, 0.25); border-radius: 8px; padding: 0.85rem; margin-bottom: 1.2rem; font-size: 0.82rem; line-height: 1.5;">
+                <strong style="color: var(--accent-cyan);" id="portal-desc-title">Employee Multi-Modal Biometrics:</strong>
+                <span id="portal-desc-text">Every login requires matching your live face scan and voiceprint vector with your registered biometric profiles in the Zero-Trust database.</span>
+              </div>
+
+              <!-- Mandatory Biometrics Readiness Checklist -->
+              <div id="biometric-readiness-checklist" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.85rem; font-size: 0.75rem; font-family: var(--font-mono);">
+                <div id="status-face-pill" style="padding: 0.45rem 0.6rem; border-radius: 6px; border: 1px solid rgba(244, 63, 94, 0.4); background: rgba(244, 63, 94, 0.08); color: var(--accent-rose); display: flex; align-items: center; justify-content: center; gap: 0.35rem; font-weight: 600;">
+                  <span id="icon-face-status">✕</span> <span id="text-face-status">Face: Unverified</span>
+                </div>
+                <div id="status-voice-pill" style="padding: 0.45rem 0.6rem; border-radius: 6px; border: 1px solid rgba(244, 63, 94, 0.4); background: rgba(244, 63, 94, 0.08); color: var(--accent-rose); display: flex; align-items: center; justify-content: center; gap: 0.35rem; font-weight: 600;">
+                  <span id="icon-voice-status">✕</span> <span id="text-voice-status">Voice: Unverified</span>
+                </div>
+              </div>
+
+              <button type="submit" id="btn-login-submit" class="btn btn-primary btn-full">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                <span id="btn-login-text">Scan Face & Voice to Sign In as Employee</span>
+              </button>
+
+              <div style="display: flex; gap: 0.5rem; margin-top: 0.65rem;">
+                <button type="button" id="btn-enroll-current-face" class="btn btn-secondary btn-full" style="font-size: 0.8rem; border-color: rgba(0, 242, 254, 0.5); background: rgba(0, 242, 254, 0.08);">
+                  📸 Enroll Face Profile
+                </button>
+                <button type="button" id="btn-enroll-current-voice" class="btn btn-secondary btn-full" style="font-size: 0.8rem; border-color: rgba(139, 92, 246, 0.5); background: rgba(139, 92, 246, 0.08);">
+                  🎙️ Enroll Voiceprint
+                </button>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.65rem; font-size: 0.78rem; color: var(--text-muted); background: rgba(0, 242, 254, 0.04); border: 1px dashed rgba(0, 242, 254, 0.25); border-radius: 6px; padding: 0.45rem 0.65rem;">
+                <input type="checkbox" id="chk-auto-enroll-face" checked style="accent-color: var(--accent-cyan); cursor: pointer; width: 15px; height: 15px;">
+                <label for="chk-auto-enroll-face" style="cursor: pointer; user-select: none;">
+                  <strong>Auto-bind live biometrics (face & voice)</strong> on login if first time
+                </label>
+              </div>
+            </form>
+
+            <!-- Register Form (Initially Hidden) -->
+            <form id="form-register" style="display: none;">
+              <div class="form-group">
+                <label class="form-label" for="reg-fullname">Full Name</label>
+                <input type="text" id="reg-fullname" class="form-input" placeholder="Prince Kumar" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="reg-username">Username</label>
+                <input type="text" id="reg-username" class="form-input" placeholder="prince" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="reg-role">Portal Role</label>
+                <select id="reg-role" class="form-input">
+                  <option value="user">Employee (Standard User)</option>
+                  <option value="admin">Security Administrator (SOC Admin)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="reg-password">Password</label>
+                <input type="password" id="reg-password" class="form-input" placeholder="Create strong password" required>
+              </div>
+
+              <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 0.75rem; margin-bottom: 1.2rem; font-size: 0.8rem;">
+                <strong style="color: var(--accent-emerald);">Biometric Face Enrollment:</strong> Keep your face aligned with the camera. Your 128-d biometric template will be permanently registered for future logins.
+              </div>
+
+              <button type="submit" id="btn-register-submit" class="btn btn-primary btn-full">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+                Capture Live Face & Enroll Profile
+              </button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- VIEW A: EMPLOYEE / USER ZERO-TRUST WORKSPACE             -->
+      <!-- ======================================================== -->
+      <div id="user-dashboard-view" style="display: none;">
+        <div class="user-hero-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem;">
+                <span class="badge-role-user">EMPLOYEE PORTAL</span>
+                <span class="metric-pill" style="font-size: 0.72rem; color: var(--accent-emerald);">BIOMETRIC ID: VERIFIED</span>
+              </div>
+              <h2 id="user-dash-name" style="font-size: 1.5rem; font-weight: 700;">Welcome, Prince Kumar</h2>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Zero-Trust Continuous Governance Active | Session ID: <span id="user-session-id" style="font-family: var(--font-mono); color: var(--accent-cyan);">--</span></p>
+            </div>
+            <div style="display: flex; gap: 0.8rem;">
+              <button id="btn-user-pulse-trust" class="btn btn-secondary">⚡ Refresh Trust Score</button>
+              <button id="btn-user-test-stepup" class="btn btn-secondary" style="border-color: rgba(245, 158, 11, 0.4);">⚠️ Simulate Risk Step-Up</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 1.5rem;">
+          
+          <!-- Personal Trust Score Gauge -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="12 6 12 12 16 14"></polygon></svg>
+                Personal In-Session Trust Score (TS)
+              </div>
+              <span id="user-status-pill" class="metric-pill" style="color: var(--accent-emerald);">SESSION SECURE</span>
+            </div>
+
+            <div class="trust-score-display">
+              <div class="dial-circle" id="user-ts-dial" style="--ts-percent: 90;">
+                <div class="dial-inner">
+                  <span id="user-ts-display" class="score-number">90.0</span>
+                  <span class="score-label">TRUST SCORE</span>
+                </div>
+              </div>
+              <div id="user-decision-badge" class="decision-badge decision-grant">
+                <span>PEP: FULL ACCESS GRANTED</span>
+              </div>
+            </div>
+
+            <div style="font-size: 0.82rem; color: var(--text-muted); text-align: center; margin-top: 0.5rem;">
+              Minimum threshold required for enterprise resources: &mu;<sub>tt</sub> = <strong id="user-mutt-val">80.0</strong>
+            </div>
+          </div>
+
+          <!-- Authorized Employee Workspaces -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                Authorized Enterprise Applications
+              </div>
+              <span class="metric-pill" style="font-size: 0.72rem; color: var(--accent-cyan);">PEP ENFORCED</span>
+            </div>
+
+            <div class="grid-2" style="gap: 0.75rem;">
+              <div class="resource-card" id="user-res-hr">
+                <div>
+                  <strong style="font-size: 0.88rem;">Employee HR & Payroll</strong>
+                  <p style="font-size: 0.75rem; color: var(--text-muted);">Self-service portal & benefits</p>
+                </div>
+                <span class="metric-pill" style="font-size: 0.7rem; color: var(--accent-emerald); align-self: flex-start; margin-top: 0.5rem;">UNLOCKED</span>
+              </div>
+
+              <div class="resource-card" id="user-res-git">
+                <div>
+                  <strong style="font-size: 0.88rem;">Engineering Git Repos</strong>
+                  <p style="font-size: 0.75rem; color: var(--text-muted);">Source code & pull requests</p>
+                </div>
+                <span class="metric-pill" style="font-size: 0.7rem; color: var(--accent-emerald); align-self: flex-start; margin-top: 0.5rem;">UNLOCKED</span>
+              </div>
+
+              <div class="resource-card" id="user-res-wiki">
+                <div>
+                  <strong style="font-size: 0.88rem;">Corporate Wiki & Docs</strong>
+                  <p style="font-size: 0.75rem; color: var(--text-muted);">Internal specifications</p>
+                </div>
+                <span class="metric-pill" style="font-size: 0.7rem; color: var(--accent-emerald); align-self: flex-start; margin-top: 0.5rem;">UNLOCKED</span>
+              </div>
+
+              <div class="resource-card locked" id="user-res-core">
+                <div>
+                  <strong style="font-size: 0.88rem;">Production Infrastructure</strong>
+                  <p style="font-size: 0.75rem; color: var(--text-muted);">Admin SOC access required</p>
+                </div>
+                <span class="metric-pill" style="font-size: 0.7rem; color: var(--accent-rose); align-self: flex-start; margin-top: 0.5rem;">RESTRICTED</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Live Facial Recognition Status Card -->
+          <div class="card" style="grid-column: 1 / -1; background: rgba(15, 23, 42, 0.85); border-left: 4px solid var(--accent-cyan); margin-top: 0.5rem;">
+            <div class="card-header">
+              <div class="card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+                Biometric Facial Recognition Verification
+              </div>
+              <span class="metric-pill" style="color: var(--accent-emerald);">IDENTITY VERIFIED & SECURED</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+              <div style="width: 75px; height: 75px; border-radius: 50%; border: 2px solid var(--accent-cyan); overflow: hidden; background: #020617; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 16px rgba(0, 242, 254, 0.4);">
+                <img id="user-verified-avatar" src="" alt="Verified Face" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                <svg id="user-avatar-svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              </div>
+              <div style="flex: 1;">
+                <div style="font-size: 1rem; font-weight: 700; color: var(--text-main);">Subject: <span id="user-verified-name" style="color: var(--accent-cyan);">Prince Kumar</span></div>
+                <div style="font-size: 0.8rem; font-family: var(--font-mono); color: var(--text-muted); margin-top: 0.3rem; line-height: 1.5;">
+                  • Biometric Match Confidence: <strong id="user-match-confidence" style="color: var(--accent-emerald);">96% (MATCH VERIFIED)</strong><br>
+                  • Anti-Spoofing Liveness: <strong style="color: var(--accent-emerald);">PASSED (Micro-movement confirmed)</strong><br>
+                  • Enrolled Template: <span style="color: var(--text-dim);">128-D Normalized Biometric Vector</span>
+                </div>
+              </div>
+              <div>
+                <button id="btn-user-reverify" class="btn btn-primary" style="font-size: 0.82rem;">📸 Live Re-Verify Face</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- VIEW B: SECURITY ADMIN (SOC) CONTROL CONSOLE             -->
+      <!-- ======================================================== -->
+      <div id="admin-dashboard-view" style="display: none;">
+        <div class="grid-2">
+          
+          <!-- Trust Score & PEP Decision Dial -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="12 6 12 12 16 14"></polygon></svg>
+                SOC Continuous Risk Score & Policy Decision Point
+              </div>
+              <span id="session-status-badge" class="metric-pill" style="color: var(--accent-emerald);">SESSION ACTIVE</span>
+            </div>
+
+            <div class="trust-score-display">
+              <div class="dial-circle" id="ts-dial" style="--ts-percent: 85;">
+                <div class="dial-inner">
+                  <span id="ts-value-display" class="score-number">85.0</span>
+                  <span class="score-label">TRUST SCORE</span>
+                </div>
+              </div>
+
+              <div id="pdp-decision-badge" class="decision-badge decision-grant">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>PEP: ACCESS GRANTED</span>
+              </div>
+            </div>
+
+            <!-- Factor Telemetry Breakdown -->
+            <div style="margin-top: 1.2rem;">
+              <div class="factor-bar-group">
+                <div class="factor-bar-header">
+                  <span>User Behavior (B) <small id="w-b-badge" style="color: var(--accent-cyan);">(w: 0.35)</small></span>
+                  <strong id="val-b">90.0</strong>
+                </div>
+                <div class="factor-bar-track"><div id="bar-b" class="factor-bar-val" style="width: 90%; background: var(--accent-cyan);"></div></div>
+              </div>
+
+              <div class="factor-bar-group">
+                <div class="factor-bar-header">
+                  <span>Network Context (N<sub>adj</sub> = N<sub>raw</sub> &times; [1 - P<sub>anom</sub>]) <small id="w-n-badge" style="color: var(--accent-blue);">(w: 0.35)</small></span>
+                  <strong id="val-n">88.5</strong>
+                </div>
+                <div class="factor-bar-track"><div id="bar-n" class="factor-bar-val" style="width: 88.5%; background: var(--accent-blue);"></div></div>
+              </div>
+
+              <div class="factor-bar-group">
+                <div class="factor-bar-header">
+                  <span>Device Posture (D) <small id="w-d-badge" style="color: var(--accent-purple);">(w: 0.20)</small></span>
+                  <strong id="val-d">85.0</strong>
+                </div>
+                <div class="factor-bar-track"><div id="bar-d" class="factor-bar-val" style="width: 85%; background: var(--accent-purple);"></div></div>
+              </div>
+
+              <div class="factor-bar-group">
+                <div class="factor-bar-header">
+                  <span>Historical Threat Context (T) <small id="w-t-badge" style="color: var(--accent-amber);">(w: 0.10)</small></span>
+                  <strong id="val-t">92.0</strong>
+                </div>
+                <div class="factor-bar-track"><div id="bar-t" class="factor-bar-val" style="width: 92%; background: var(--accent-amber);"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mid-Session Threat Simulator & Enterprise Resources -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-rose)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                Active Threat Injection & Continuous Step-Up MFA
+              </div>
+              <button id="btn-poll-pdp" class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">⚡ Pulse PDP</button>
+            </div>
+
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+              Simulate live contextual anomalies to test continuous Zero-Trust policy enforcement. If Trust Score falls below &mu;<sub>tt</sub> into [&mu;<sub>mfa</sub>, &mu;<sub>tt</sub>), the PEP will immediately trigger <strong>Step-Up Face Scan Authentication</strong>!
+            </p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 1.5rem;">
+              <button class="btn btn-secondary" id="btn-inject-normal" style="font-size: 0.8rem;">
+                🟢 Nominal Benign Flow
+              </button>
+              <button class="btn btn-secondary" id="btn-inject-insider" style="font-size: 0.8rem; border-color: rgba(245, 158, 11, 0.4);">
+                🟠 Malicious Insider (CERT)
+              </button>
+              <button class="btn btn-secondary" id="btn-inject-dos" style="font-size: 0.8rem; border-color: rgba(244, 63, 94, 0.4);">
+                🔴 SynFlood DoS (CIC-IDS)
+              </button>
+              <button class="btn btn-secondary" id="btn-inject-edr" style="font-size: 0.8rem; border-color: rgba(139, 92, 246, 0.4);">
+                🟣 Host EDR Compromise
+              </button>
+            </div>
+
+            <!-- Protected Workspaces -->
+            <div class="card-title" style="font-size: 0.95rem; margin-bottom: 0.75rem;">
+              Enterprise Workspaces (Governed by PEP)
+            </div>
+            <div class="grid-3" style="gap: 0.75rem;">
+              <div class="resource-card" id="res-db">
+                <div>
+                  <strong style="font-size: 0.85rem;">Prod Customer DB</strong>
+                  <p style="font-size: 0.72rem; color: var(--text-muted);">Encrypted SQL cluster</p>
+                </div>
+                <span class="metric-pill" style="font-size: 0.7rem; color: var(--accent-emerald);">UNLOCKED</span>
+              </div>
+              <div class="resource-card" id="res-vault">
+                <div>
+                  <strong style="font-size: 0.85rem;">Financial Vault</strong>
+                  <p style="font-size: 0.72rem; color: var(--text-muted);">Audit & payment logs</p>
+                </div>
+                <span class="metric-pill" style="font-size: 0.7rem; color: var(--accent-emerald);">UNLOCKED</span>
+              </div>
+              <div class="resource-card" id="res-firewall">
+                <div>
+                  <strong style="font-size: 0.85rem;">Firewall Gateway</strong>
+                  <p style="font-size: 0.72rem; color: var(--text-muted);">Network root policy</p>
+                </div>
+                <span class="metric-pill" style="font-size: 0.7rem; color: var(--accent-emerald);">UNLOCKED</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Admin Live Facial Recognition Status Card -->
+          <div class="card" style="grid-column: 1 / -1; background: rgba(15, 23, 42, 0.85); border-left: 4px solid var(--accent-rose); margin-top: 0.5rem;">
+            <div class="card-header">
+              <div class="card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-rose)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+                SOC Administrator Biometric Facial Verification
+              </div>
+              <span class="metric-pill" style="color: var(--accent-rose);">ADMIN CLEARANCE ACTIVE</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+              <div style="width: 75px; height: 75px; border-radius: 50%; border: 2px solid var(--accent-rose); overflow: hidden; background: #020617; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 16px rgba(244, 63, 94, 0.4);">
+                <img id="admin-verified-avatar" src="" alt="Verified Admin Face" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                <svg id="admin-avatar-svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--accent-rose)" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              </div>
+              <div style="flex: 1;">
+                <div style="font-size: 1rem; font-weight: 700; color: var(--text-main);">Administrator: <span id="admin-verified-name" style="color: var(--accent-rose);">Dr. Jane Vance (SecOps Lead)</span></div>
+                <div style="font-size: 0.8rem; font-family: var(--font-mono); color: var(--text-muted); margin-top: 0.3rem; line-height: 1.5;">
+                  • Biometric Match Confidence: <strong id="admin-match-confidence" style="color: var(--accent-emerald);">98% (MATCH VERIFIED)</strong><br>
+                  • Privileged Optical Session: <strong style="color: var(--accent-emerald);">ENFORCED (Hardware Camera Verified)</strong><br>
+                  • Real-Time Policy: <span style="color: var(--text-dim);">Continuous Zero-Trust PDP &amp; PEP Active</span>
+                </div>
+              </div>
+              <div>
+                <button id="btn-admin-reverify" class="btn btn-primary" style="font-size: 0.82rem; background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%); border-color: #f43f5e;">📸 Live Re-Verify Admin Face</button>
+              </div>
+            </div>
+          <!-- SOC THREAT & VULNERABILITY INTELLIGENCE CENTER (FULL VISIBILITY) -->
+          <div class="card" style="grid-column: 1 / -1; margin-top: 1rem; border-top: 3px solid var(--accent-rose);">
+            <div class="card-header">
+              <div class="card-title" style="font-size: 1.1rem;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-rose)" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                SOC Live Threat &amp; Vulnerability Intelligence Radar
+              </div>
+              <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <span id="soc-active-threat-badge" class="metric-pill" style="color: var(--accent-emerald); font-weight: 700;">🟢 DEFCON 5: BENIGN MONITORING</span>
+                <button id="btn-refresh-threats" class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">🔄 Refresh Radar</button>
+              </div>
+            </div>
+
+            <!-- Active Threat Live Telemetry Summary -->
+            <div id="soc-threat-banner" style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(244, 63, 94, 0.25); border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <strong style="font-size: 0.95rem; color: var(--text-main);" id="soc-threat-name">Current Flow: Nominal Benign Traffic (Zero Anomalies)</strong>
+                <span class="metric-pill" id="soc-threat-sev" style="color: var(--accent-emerald);">SEVERITY: NORMAL</span>
+              </div>
+              <div class="grid-3" style="gap: 0.8rem; font-size: 0.8rem; font-family: var(--font-mono); color: var(--text-muted);">
+                <div>• Targeted Asset: <strong id="soc-threat-asset" style="color: var(--accent-cyan);">All Enterprise Workspaces Normal</strong></div>
+                <div>• Attack Vector / MITRE: <strong id="soc-threat-mitre" style="color: var(--accent-amber);">Normal Operations</strong></div>
+                <div>• Source IP / Host: <strong id="soc-threat-source" style="color: var(--text-main);">10.0.4.12 (Internal)</strong></div>
+              </div>
+              <div style="margin-top: 0.6rem; font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 0.5rem;">
+                <strong>Policy Enforcement Action:</strong> <span id="soc-threat-mitigation" style="color: var(--accent-emerald);">Full Access Granted across authorized enterprise applications.</span>
+              </div>
+            </div>
+
+            <!-- Tracked Vulnerabilities & CVE Matrix Table -->
+            <div class="card-title" style="font-size: 0.95rem; margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: space-between;">
+              <span>Enterprise Vulnerability Risk Matrix (CVE Catalog &amp; Zero-Trust Protections)</span>
+              <span class="metric-pill" style="font-size: 0.72rem; color: var(--accent-cyan);">6 Tracked CVEs</span>
+            </div>
+            <div style="overflow-x: auto;">
+              <table class="audit-table" style="width: 100%; font-size: 0.82rem;">
+                <thead>
+                  <tr>
+                    <th>Vulnerability ID</th>
+                    <th>Vulnerability Title</th>
+                    <th>CVSS</th>
+                    <th>Severity</th>
+                    <th>Targeted Component</th>
+                    <th>MITRE Technique</th>
+                    <th>Zero-Trust PEP Defense</th>
+                  </tr>
+                </thead>
+                <tbody id="table-vulnerabilities-body">
+                  <!-- Dynamically populated via JS -->
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: FUTURE WORK RESEARCH LAB (8 REQUIREMENTS - ADMIN) -->
+    <!-- ======================================================== -->
+    <section id="tab-future" class="tab-content" style="display: none;">
+      
+      <!-- Sub-tabs for the 8 Future Work Items -->
+      <div class="subtabs">
+        <button class="subtab-btn active" data-subtab="sub-telemetry">1. Real Telemetry (IAM/EDR/SIEM)</button>
+        <button class="subtab-btn" data-subtab="sub-weights">2. Learned Weights (Attention/RL)</button>
+        <button class="subtab-btn" data-subtab="sub-rl">3. Advanced RL (Dueling/DDQN)</button>
+        <button class="subtab-btn" data-subtab="sub-distill">4. Model Efficiency & Distillation</button>
+        <button class="subtab-btn" data-subtab="sub-xai">5. Explainability (SHAP XAI)</button>
+        <button class="subtab-btn" data-subtab="sub-fed">6. Privacy & Scale (Federated)</button>
+        <button class="subtab-btn" data-subtab="sub-robust">7. Robustness & Anti-Poisoning</button>
+        <button class="subtab-btn" data-subtab="sub-eval">8. Online Evaluation (PEP/PDP Latency)</button>
+      </div>
+
+      <!-- 1. Real Telemetry -->
+      <div id="sub-telemetry" class="subtab-content active">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Requirement 1: Multi-Source Telemetry Ingestion (IAM, EDR, SIEM, CERT, CIC-IDS)</div>
+            <span class="metric-pill" id="telemetry-source-pill">Source: Live Enterprise Telemetry</span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Overcomes synthetic dataset limitations by unifying multi-layered contextual telemetry across Identity (IAM), Endpoint Agents (CrowdStrike/Defender EDR), and Security Operations Event Management (SIEM).
+          </p>
+          <div class="grid-3" style="margin-bottom: 1rem;">
+            <div class="card" style="background: rgba(15, 23, 42, 0.8);">
+              <strong style="color: var(--accent-cyan); font-size: 0.85rem;">IAM Telemetry</strong>
+              <div style="font-size: 0.78rem; font-family: var(--font-mono); margin-top: 0.5rem; line-height: 1.6;" id="iam-readout">
+                • User: analyst<br>• Access Hour: 14:00 (Normal)<br>• Failed Logins: 0<br>• Geo Location: Clean<br>• Credential Age: 3 days
+              </div>
+            </div>
+            <div class="card" style="background: rgba(15, 23, 42, 0.8);">
+              <strong style="color: var(--accent-purple); font-size: 0.85rem;">EDR Telemetry</strong>
+              <div style="font-size: 0.78rem; font-family: var(--font-mono); margin-top: 0.5rem; line-height: 1.6;" id="edr-readout">
+                • Host ID: HOST-CORP-SEC-01<br>• Agent Status: HEALTHY<br>• Disk Encrypted: YES (FileVault)<br>• Process Hash: Verified<br>• Unapproved Exec: None
+              </div>
+            </div>
+            <div class="card" style="background: rgba(15, 23, 42, 0.8);">
+              <strong style="color: var(--accent-amber); font-size: 0.85rem;">SIEM Telemetry</strong>
+              <div style="font-size: 0.78rem; font-family: var(--font-mono); margin-top: 0.5rem; line-height: 1.6;" id="siem-readout">
+                • Alert Level: LOW<br>• Active Alarms: 0<br>• IP Reputation: 98/100<br>• Bandwidth: 3.4 MB/s<br>• Lateral Moves: None
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Learned Weights -->
+      <div id="sub-weights" class="subtab-content" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Requirement 2: Learned & Attention-Based Factor Weights (w<sub>B</sub>, w<sub>N</sub>, w<sub>D</sub>, w<sub>T</sub>)</div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn btn-secondary btn-sm" id="btn-weight-fixed">Fixed Baseline</button>
+              <button class="btn btn-primary btn-sm" id="btn-weight-learned">Attention Learned</button>
+              <button class="btn btn-secondary btn-sm" id="btn-weight-rl">RL Adapted</button>
+            </div>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Replaces static linear weights with dynamic self-attention across risk vectors. High-uncertainty or compromised factors automatically receive elevated salience (&sum; w<sub>i</sub> = 1.0).
+          </p>
+          <div class="grid-4" style="margin-top: 1rem;">
+            <div class="meter-wrapper">
+              <div class="meter-header"><span>w<sub>B</sub> (User Behavior)</span><strong id="w-val-b">0.35</strong></div>
+              <div class="progress-bar-bg"><div id="w-bar-b" class="progress-bar-fill" style="width: 35%; background: var(--accent-cyan);"></div></div>
+            </div>
+            <div class="meter-wrapper">
+              <div class="meter-header"><span>w<sub>N</sub> (Network Context)</span><strong id="w-val-n">0.35</strong></div>
+              <div class="progress-bar-bg"><div id="w-bar-n" class="progress-bar-fill" style="width: 35%; background: var(--accent-blue);"></div></div>
+            </div>
+            <div class="meter-wrapper">
+              <div class="meter-header"><span>w<sub>D</sub> (Device Posture)</span><strong id="w-val-d">0.20</strong></div>
+              <div class="progress-bar-bg"><div id="w-bar-d" class="progress-bar-fill" style="width: 20%; background: var(--accent-purple);"></div></div>
+            </div>
+            <div class="meter-wrapper">
+              <div class="meter-header"><span>w<sub>T</sub> (Threat Context)</span><strong id="w-val-t">0.10</strong></div>
+              <div class="progress-bar-bg"><div id="w-bar-t" class="progress-bar-fill" style="width: 10%; background: var(--accent-amber);"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Advanced RL -->
+      <div id="sub-rl" class="subtab-content" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Requirement 3: Advanced RL Engine (Dueling DQN, Double DQN, Contextual Bandits)</div>
+            <div style="display: flex; gap: 0.5rem;">
+              <select id="rl-algo-select" class="form-input" style="padding: 0.35rem 0.8rem; font-size: 0.8rem; width: auto;">
+                <option value="dueling_dqn">Dueling DQN (Value + Advantage Streams)</option>
+                <option value="double_dqn">Double DQN (Overestimation Eliminator)</option>
+                <option value="standard_dqn">Standard DQN (Baseline)</option>
+                <option value="contextual_bandit">Contextual Bandits (Continuous Control)</option>
+              </select>
+              <button id="btn-trigger-rl-step" class="btn btn-primary" style="font-size: 0.78rem; padding: 0.35rem 0.8rem;">Train Step</button>
+            </div>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Dueling DQN splits the Q-network into state-value V(s) and advantage A(s, a) streams to prevent policy collapse in highly stochastic cloud environments.
+          </p>
+          <div class="grid-4">
+            <div class="card" style="padding: 1rem; text-align: center;">
+              <div style="font-size: 0.72rem; color: var(--text-muted);">Q-VALUE DECREASE (-2)</div>
+              <div id="q-val-0" style="font-size: 1.4rem; font-family: var(--font-mono); color: var(--accent-cyan); font-weight: 700;">--</div>
+            </div>
+            <div class="card" style="padding: 1rem; text-align: center;">
+              <div style="font-size: 0.72rem; color: var(--text-muted);">Q-VALUE MAINTAIN (0)</div>
+              <div id="q-val-1" style="font-size: 1.4rem; font-family: var(--font-mono); color: var(--accent-emerald); font-weight: 700;">--</div>
+            </div>
+            <div class="card" style="padding: 1rem; text-align: center;">
+              <div style="font-size: 0.72rem; color: var(--text-muted);">Q-VALUE INCREASE (+2)</div>
+              <div id="q-val-2" style="font-size: 1.4rem; font-family: var(--font-mono); color: var(--accent-rose); font-weight: 700;">--</div>
+            </div>
+            <div class="card" style="padding: 1rem; text-align: center;">
+              <div style="font-size: 0.72rem; color: var(--text-muted);">EXPLORATION EPSILON</div>
+              <div id="rl-epsilon" style="font-size: 1.4rem; font-family: var(--font-mono); color: var(--accent-purple); font-weight: 700;">0.20</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Model Distillation -->
+      <div id="sub-distill" class="subtab-content" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Requirement 4: Model Distillation & Edge PEP Latency Benchmarking</div>
+            <button id="btn-run-benchmark" class="btn btn-primary" style="font-size: 0.78rem; padding: 0.35rem 0.8rem;">Run 100x Benchmark</button>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Compresses the deep AE-CNN-BiLSTM-MHA Teacher into a distilled Student model for low-latency, high-concurrency PEP edge gateway deployment.
+          </p>
+          <div class="grid-2">
+            <div class="card" style="background: rgba(15, 23, 42, 0.8);">
+              <strong style="color: var(--accent-cyan);">Teacher Model (AE-CNN-BiLSTM-MHA)</strong>
+              <div style="font-family: var(--font-mono); font-size: 0.8rem; margin-top: 0.75rem; line-height: 1.8;">
+                • Latency: <span id="teacher-latency" style="color: var(--accent-cyan); font-weight: bold;">2.45 ms</span><br>
+                • Throughput: <span id="teacher-throughput">408 req/sec</span><br>
+                • Parameter Footprint: <span id="teacher-params">~28,900 weights</span><br>
+                • Architecture: Autoencoder + Conv1D + BiLSTM + 4-Head Attention
+              </div>
+            </div>
+            <div class="card" style="background: rgba(15, 23, 42, 0.8); border-color: rgba(16, 185, 129, 0.4);">
+              <strong style="color: var(--accent-emerald);">Distilled Student Model (Edge-CNN)</strong>
+              <div style="font-family: var(--font-mono); font-size: 0.8rem; margin-top: 0.75rem; line-height: 1.8;">
+                • Latency: <span id="student-latency" style="color: var(--accent-emerald); font-weight: bold;">0.012 ms</span><br>
+                • Throughput: <span id="student-throughput">83,300 req/sec</span><br>
+                • Parameter Footprint: <span id="student-params">~1,400 weights</span><br>
+                • Edge Speedup: <strong id="speedup-badge" style="color: var(--accent-emerald);">204x Faster</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Explainability (SHAP XAI) -->
+      <div id="sub-xai" class="subtab-content" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Requirement 5: Explainable AI (SHAP Shapley Factor Attribution)</div>
+            <span class="metric-pill" style="color: var(--accent-cyan);">Audit Transparency Mode</span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Shapley value decomposition explaining why the PEP granted access, required a Face Scan step-up, or revoked a session.
+          </p>
+          <div class="card" style="background: rgba(15, 23, 42, 0.8); margin-bottom: 1rem; border-left: 4px solid var(--accent-cyan);">
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Plain Language Auditor Narrative:</div>
+            <p id="xai-narrative" style="font-size: 0.9rem; font-weight: 500; margin-top: 0.4rem; color: var(--text-main);">
+              Session GRANTED: Composite Trust Score (85.0) exceeds dynamic threshold mu_tt (80.0). All risk vectors remain within verified baselines.
+            </p>
+          </div>
+          <div id="xai-contributions-list"></div>
+        </div>
+      </div>
+
+      <!-- 6. Federated Learning -->
+      <div id="sub-fed" class="subtab-content" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Requirement 6: Multi-Tenant Privacy-Preserving Federated Learning</div>
+            <button id="btn-run-fed-round" class="btn btn-primary" style="font-size: 0.78rem; padding: 0.35rem 0.8rem;">Run FedAvg Round</button>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Enables model updates across decentralized cloud tenants via Federated Averaging (FedAvg) without sharing raw network traffic or biometric templates.
+          </p>
+          <div class="grid-3" id="fed-tenants-grid"></div>
+          <div class="card" style="background: rgba(15, 23, 42, 0.8); margin-top: 1rem; font-family: var(--font-mono); font-size: 0.8rem;">
+            <div>Global Aggregation Round: <strong id="fed-round-num" style="color: var(--accent-cyan);">1</strong></div>
+            <div>Global Loss: <strong id="fed-loss" style="color: var(--accent-emerald);">0.1648</strong> | Global Accuracy: <strong id="fed-acc" style="color: var(--accent-emerald);">94.8%</strong></div>
+            <div style="margin-top: 0.3rem; color: var(--text-muted);">Privacy Guard: Zero raw telemetry or face data leaves tenant VPC enclaves.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. Robustness & Anti-Poisoning -->
+      <div id="sub-robust" class="subtab-content" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Requirement 7: Adversarial Evasion, Concept Drift & Anti-Poisoning Shield</div>
+          </div>
+          <div class="grid-3">
+            <div class="card" style="background: rgba(15, 23, 42, 0.8);">
+              <strong style="color: var(--accent-rose);">Adversarial Evasion (FGSM)</strong>
+              <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0.5rem 0;">Simulates gradient sign perturbation against flow features.</p>
+              <button id="btn-test-evasion" class="btn btn-secondary btn-full" style="font-size: 0.78rem;">Simulate FGSM Evasion</button>
+              <div id="evasion-result" style="font-size: 0.75rem; font-family: var(--font-mono); margin-top: 0.5rem; color: var(--text-muted);">Ready for test.</div>
+            </div>
+
+            <div class="card" style="background: rgba(15, 23, 42, 0.8);">
+              <strong style="color: var(--accent-amber);">Concept Drift Detector</strong>
+              <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0.5rem 0;">Page-Hinkley test monitoring statistical distribution shifts.</p>
+              <button id="btn-test-drift" class="btn btn-secondary btn-full" style="font-size: 0.78rem;">Pulse Traffic Drift Check</button>
+              <div id="drift-result" style="font-size: 0.75rem; font-family: var(--font-mono); margin-top: 0.5rem; color: var(--text-muted);">Status: Nominal (No drift)</div>
+            </div>
+
+            <div class="card" style="background: rgba(15, 23, 42, 0.8);">
+              <strong style="color: var(--accent-cyan);">DQN Anti-Poisoning Filter</strong>
+              <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0.5rem 0;">Sanitizes Experience Replay to block threshold tampering.</p>
+              <div style="font-size: 1.2rem; font-family: var(--font-mono); color: var(--accent-emerald); font-weight: 700; margin-top: 0.5rem;" id="poison-count">
+                0 Blocked
+              </div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.2rem;">Filter Active (100% Experience Guard)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. Online Evaluation Latency -->
+      <div id="sub-eval" class="subtab-content" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Requirement 8: Online Evaluation (Real PEP / PDP End-to-End Decision Latency)</div>
+            <span class="metric-pill" style="color: var(--accent-emerald);">Live PEP Testbed</span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Measures real-time sub-millisecond execution across each pipeline stage from raw telemetry receipt to PEP enforcement.
+          </p>
+          <div class="grid-4" style="margin-bottom: 1.5rem;">
+            <div class="card" style="padding: 1rem; text-align: center;">
+              <div style="font-size: 0.72rem; color: var(--text-muted);">1. INFERENCE LATENCY</div>
+              <div id="bench-infer" style="font-size: 1.3rem; font-family: var(--font-mono); color: var(--accent-cyan); font-weight: 700;">2.45 ms</div>
+            </div>
+            <div class="card" style="padding: 1rem; text-align: center;">
+              <div style="font-size: 0.72rem; color: var(--text-muted);">2. TRUST ENGINE</div>
+              <div id="bench-trust" style="font-size: 1.3rem; font-family: var(--font-mono); color: var(--accent-blue); font-weight: 700;">0.04 ms</div>
+            </div>
+            <div class="card" style="padding: 1rem; text-align: center;">
+              <div style="font-size: 0.72rem; color: var(--text-muted);">3. RL THRESHOLDING</div>
+              <div id="bench-rl" style="font-size: 1.3rem; font-family: var(--font-mono); color: var(--accent-purple); font-weight: 700;">0.08 ms</div>
+            </div>
+            <div class="card" style="padding: 1rem; text-align: center;">
+              <div style="font-size: 0.72rem; color: var(--text-muted);">TOTAL DECISION LATENCY</div>
+              <div id="bench-total" style="font-size: 1.3rem; font-family: var(--font-mono); color: var(--accent-emerald); font-weight: 700;">2.62 ms</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: USERS & FACE DIRECTORY (ADMIN)                    -->
+    <!-- ======================================================== -->
+    <section id="tab-users" class="tab-content" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+            Registered Users & Enrolled Facial Biometrics Directory
+          </div>
+          <button id="btn-refresh-users" class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">Refresh Directory</button>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="audit-table">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Full Name</th>
+                <th>Role / Privilege</th>
+                <th>Biometric Face Enrolled</th>
+                <th>128-D Vector State</th>
+                <th>Registered Timestamp</th>
+              </tr>
+            </thead>
+            <tbody id="users-table-body">
+              <tr><td colspan="6" style="text-align: center; color: var(--text-dim);">Loading user directory...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: SECURITY AUDIT TRAIL (ADMIN)                      -->
+    <!-- ======================================================== -->
+    <section id="tab-audit" class="tab-content" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Policy Enforcement Point (PEP) Real-Time Audit Log</div>
+          <button id="btn-refresh-audit" class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">Refresh Logs</button>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="audit-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Operator</th>
+                <th>Action</th>
+                <th>Decision</th>
+                <th>Trust Score</th>
+                <th>&mu;<sub>tt</sub> / &mu;<sub>mfa</sub></th>
+                <th>Factor Telemetry Details</th>
+              </tr>
+            </thead>
+            <tbody id="audit-table-body">
+              <tr><td colspan="7" style="text-align: center; color: var(--text-dim);">Loading audit events...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- ADVANCED STEP-UP MFA BIOMETRIC MODAL                     -->
+  <!-- ======================================================== -->
+  <div id="stepup-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="card-header" style="border-bottom: none; margin-bottom: 0.5rem;">
+        <div class="card-title" style="color: var(--accent-amber);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          Zero-Trust Step-Up Authentication Required
+        </div>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+        The PEP detected a contextual trust deviation. Your session trust score entered the challenge threshold [&mu;<sub>mfa</sub>, &mu;<sub>tt</sub>). Please align your face inside the reticle to re-verify identity and prevent session revocation.
+      </p>
+
+      <div class="scanner-viewport" style="aspect-ratio: 4/3; margin-bottom: 1rem;">
+        <video id="stepup-video" autoplay playsinline muted></video>
+        <canvas id="stepup-canvas"></canvas>
+      </div>
+
+      <div class="meter-wrapper" style="margin-bottom: 1rem;">
+        <div class="meter-header">
+          <span>Match Confidence</span>
+          <span id="stepup-confidence" style="color: var(--accent-cyan); font-weight: bold;">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div id="stepup-progress-bar" class="progress-bar-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.5rem;">
+        <button id="btn-stepup-verify" class="btn btn-primary btn-full">Scan Face & Restore Session</button>
+        <button id="btn-stepup-sim" class="btn btn-secondary">⚡ Verified Bio</button>
+        <button id="btn-stepup-close" class="btn btn-secondary" style="border-color: rgba(255,255,255,0.2);">✕ Dismiss</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="face_scanner.js"></script>
+  <script src="voice_scanner.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

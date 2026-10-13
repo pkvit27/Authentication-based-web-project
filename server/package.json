@@ -1,0 +1,9 @@
+{
+  "name": "zerotrust-server",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "node --watch server.js",
+    "start": "node server.js",
+    "test": "node ../test_api.js"
+  }
+}

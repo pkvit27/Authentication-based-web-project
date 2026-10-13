@@ -1,0 +1,29 @@
+{
+  "name": "zerotrust-continuous-risk-assessment",
+  "version": "1.0.0",
+  "description": "Zero-Trust Access Control Framework Using Continuous Risk Assessment with Biometric Face Verification",
+  "main": "server/server.js",
+  "scripts": {
+    "dev": "node --watch server/server.js",
+    "start": "node server/server.js",
+    "test": "node test_api.js"
+  },
+  "keywords": [
+    "zero-trust",
+    "continuous-risk-assessment",
+    "face-verification",
+    "biometrics",
+    "reinforcement-learning",
+    "dqn",
+    "dueling-dqn",
+    "deep-learning",
+    "autoencoder",
+    "bilstm",
+    "attention",
+    "xai",
+    "shap",
+    "federated-learning"
+  ],
+  "author": "Antigravity AI & IEEE Research Framework",
+  "license": "MIT"
+}
